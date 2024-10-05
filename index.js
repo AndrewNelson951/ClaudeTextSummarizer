@@ -1,3 +1,15 @@
+// ***********
+// CHALLENGE:
+// ***********
+// Add the @anthropic-ai/sdk@0.24.3 as a dependency to the project
+
+import Anthropic from '@anthropic-ai/sdk'
+
+const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    baseURL: 'https://apis.scrimba.com/api.anthropic.com/'
+})
+
 // Constants
 const feedbackDisplayTime = 3000
 
@@ -28,12 +40,32 @@ textInputArea.addEventListener('input', scrollTextAreaToTopAndEnableControls)
 summaryLengthInput.addEventListener('input', updateSummaryLengthText)
 
 // Button Event Handlers
-function summarize() {
+async function summarize() {
+    startLoading()
     // ***********
     // CHALLENGE:
     // ***********
-    // Call the startLoading() function
-    startLoading()
+    // Assign the value of textInputArea to a variable called text
+    const text = textInputArea.value
+    
+    const response = await anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20240620',
+        max_tokens: 300,
+        system: 'You are a text summarizer. When asked to summarize a text, send back the summary.',
+        messages: [
+            {
+                'role': 'user',
+                'content': [
+                    {
+                        'type': 'text',
+                        'text': `Summarize this text: ${text}`
+                    }
+                ]
+            }
+        ]
+    })
+    endLoading()
+    console.log(response)
 }
 
 async function copy() {
